@@ -202,6 +202,7 @@ def fetch(after, before):
                     con.commit()
             except:
                 log_exceptions(id=id)
+                failed_mails(id, date, subject, 'noble', 'inbox')
 
 
 def run():
@@ -222,6 +223,13 @@ def run():
         sleep(10)
         now = int(datetime.now().timestamp())
 
+def failed_mails(mid, date, subject, hospital, folder):
+    with mysql.connector.connect(**conn_data) as con:
+        cur = con.cursor()
+        q = "insert into failed_storage_mails (`id`,`subject`,`date`,`sys_time`,`hospital`,`folder`, `sender`) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        data = (mid, subject, date, str(datetime.now()), hospital, '', folder)
+        cur.execute(q, data)
+        con.commit()
 
 if __name__ == '__main__':
     # after, before = '1609749000', '1609752600'
